@@ -60,6 +60,17 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/orders',
+    component: Layout,
+    redirect: '/orders',
+    name: 'Orders',
+    meta: { title: 'Orders', icon: 'box' },
+    children: [{
+      path: 'orders',
+      component: () => import('@/views/orders/index')
+    }]
+  },
+  {
     path: 'Website',
     component: Layout,
     children: [
