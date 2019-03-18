@@ -9,25 +9,15 @@ const publish = async (data, mamState) => {
 
 
     try {
-        console.log("MAM::publish", data);
-        console.log("MAM::mamState", mamState);
 
         // Create MAM Payload - STRING OF TRYTES
         const trytes = asciiToTrytes(JSON.stringify(data));
         const message = Mam.create(mamState, trytes);
         
-        console.log("message", message);
-        
-        // Save new mamState
-        console.log("before attach");
-        console.log("message", message);
-
         // Attach the payload.
         await Mam.attach(message.payload, message.address, 3, 14);
-        console.log("after attach - root", message.root);
         return { root: message.root, state: message.state };
     } catch (error) {
-        console.log('MAM publish error', error);
         return null;
     }
 };
@@ -68,8 +58,6 @@ export const appendAttributesUpdate = async (product, seed, next_root, start) =>
                 if (mamData) {
                     // Create a new item entry using that item ID
                     //await createItem(eventBody, channel, secretKey);
-                    console.log("created product", eventBody);
-                    console.log("mam_object", mamData);
                     eventBody.root = mamData.root;
                     eventBody.secretKey = mamData.state.channel.secretKey;
                     eventBody.next_root = mamData.state.channel.next_root;
@@ -90,10 +78,7 @@ export const appendAttributesUpdate = async (product, seed, next_root, start) =>
 };
 
 
-const appendToChannel = async (product, seed, next_root, start) => {
-
-    console.log("appendToChannel", product);
-    
+const appendToChannel = async (product, seed, next_root, start) => {    
 
     const mamState = {
         subscribed: [],
@@ -114,7 +99,7 @@ const appendToChannel = async (product, seed, next_root, start) => {
         const eventBody = {};
         eventBody.data = product;
         eventBody.timestamp = Date.now();
-        eventBody.status = 'product_updated'
+        eventBody.status = 'updated'
 
         const messageBody = {
             ...eventBody
@@ -127,8 +112,6 @@ const appendToChannel = async (product, seed, next_root, start) => {
         if (mamData) {
             // Create a new item entry using that item ID
             //await createItem(eventBody, channel, secretKey);
-            console.log("created product", eventBody);
-            console.log("mam_object", mamData);
             eventBody.root = mamData.root;
             eventBody.secretKey = mamData.state.channel.secretKey;
             eventBody.next_root = mamData.state.channel.next_root;
@@ -175,7 +158,7 @@ export const createProductChannel = (product, seed) => {
             const eventBody = {};
             eventBody.data = product;
             eventBody.timestamp = Date.now();
-            eventBody.status = 'product_created'
+            eventBody.status = 'created'
 
             const messageBody = {
                 ...eventBody
@@ -188,9 +171,6 @@ export const createProductChannel = (product, seed) => {
             if (mam_object) {
                 // Create a new item entry using that item ID
                 //await createItem(eventBody, channel, secretKey);
-                console.log("created product", eventBody);
-                console.log("mam_object", mam_object);
-                console.log("secretKey", secretKey);
                 eventBody.root = mam_object.root;
                 eventBody.secretKey = mam_object.state.channel.secretKey;
                 eventBody.next_root = mam_object.state.channel.next_root;
@@ -223,8 +203,6 @@ export const fetchProducts = async (seed, root, secretKey) => {
 
         await Mam.fetch(root, 'restricted', secretKey, convertData)
 
-        console.log("itemEvents", itemEvents)
-
         return itemEvents;
 
     } catch (e) {
@@ -241,5 +219,5 @@ export const generateSeed = () => {
         window.crypto.getRandomValues(values);
         values.forEach(value => (result += charset[value % charset.length]));
         return result;
-    } else throw new Error("Your browser is outdated and can't generate secure random numbers");
+    } else throw new Error('Your browser is outdated and cant generate secure random numbers');
 };
