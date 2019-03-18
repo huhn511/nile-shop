@@ -15,6 +15,11 @@
   </a>
 </p>
 
+## Demo
+
+The demo application is hosted on Heroku on a free plan, so it might need to load a bit longer for the first visit.
+[Try the demo!](https://nile-shop.herokuapp.com)
+
 
 ## Introduction
 
@@ -51,4 +56,4 @@ docker build -t nile/shop .
 
 # Run the app
 docker run -p 8080:8080 nile/shop
-```
+``` 
