@@ -54,7 +54,7 @@ export const constantRouterMap = [
       {
         path: 'new',
         name: 'New',
-        component: () => import('@/views/products/index'),
+        component: () => import('@/views/products/new/index'),
         meta: { title: 'New', icon: 'add' }
       }
     ]
