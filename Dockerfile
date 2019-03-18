@@ -6,6 +6,7 @@ WORKDIR /app
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
 
+# fix to install npm moodules from github
 RUN apk add --no-cache git
 
 # install project dependencies
