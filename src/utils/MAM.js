@@ -233,12 +233,11 @@ export const fetchProducts = async (seed, root, secretKey) => {
     }
 };
 
-
-const generateSeed = length => {
+export const generateSeed = () => {
     if (window.crypto && window.crypto.getRandomValues) {
         const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
         let result = '';
-        let values = new Uint32Array(length);
+        let values = new Uint32Array(81);
         window.crypto.getRandomValues(values);
         values.forEach(value => (result += charset[value % charset.length]));
         return result;

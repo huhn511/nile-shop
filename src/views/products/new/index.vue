@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { createProductChannel } from '@/utils/MAM';
+import { createProductChannel, generateSeed } from '@/utils/MAM';
 
 import Mam from 'mam.client.js';
 
@@ -50,7 +50,7 @@ export default {
     createProduct: async function(product){
       this.loading = true
 
-      let seed = this.generateSeed()
+      let seed = generateSeed()
 
       let response = await createProductChannel(product, seed)
 
@@ -63,14 +63,6 @@ export default {
       this.loading = false
       this.$message('Product created!')
       this.form = {}
-    },
-    generateSeed(){
-      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
-      let result = '';
-      let values = new Uint32Array(81);
-      window.crypto.getRandomValues(values);
-      values.forEach(value => (result += charset[value % charset.length]));
-      return result;
     },
     onSubmit() {
       this.createProduct(this.form)
