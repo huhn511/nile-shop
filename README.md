@@ -42,3 +42,13 @@ npm run build
 # Build for production and view the bundle analyzer report
 npm run build --report
 ```
+
+### Docker
+
+```bash
+# Build the container
+docker build -t nile/shop .
+
+# Run the app
+docker run -p 8080:8080 nile/shop
+```
