@@ -65,6 +65,7 @@ export default {
       this.form = {}
     },
     onSubmit() {
+      this.form.id = this.next_id
       this.createProduct(this.form)
     },
     onCancel() {
