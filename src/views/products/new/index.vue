@@ -46,29 +46,22 @@ export default {
       } else {
           this.next_id = 1;
       }
-      console.log("products - loaded!");          
     },
     createProduct: async function(product){
-      console.log("works!", product);
-
       this.loading = true
 
       let seed = this.generateSeed()
 
       let response = await createProductChannel(product, seed)
 
-      console.log("ready!");
-
-      console.log("response", response);
       response.seed = seed
 
       this.products.push(response);
       const parsed = JSON.stringify(this.products);
       localStorage.setItem('products', parsed)
-      console.log("products updated!");
       this.loadProducts()  
       this.loading = false
-      this.$message('Product created!!')
+      this.$message('Product created!')
       this.form = {}
     },
     generateSeed(){
@@ -80,7 +73,6 @@ export default {
       return result;
     },
     onSubmit() {
-      console.log("fom", this.form)
       this.createProduct(this.form)
     },
     onCancel() {
@@ -91,7 +83,6 @@ export default {
     }
   },
   mounted() {
-    console.log("view - products - mounted!");
     this.loadProducts()
   }
 
