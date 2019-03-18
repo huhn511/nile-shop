@@ -1,7 +1,15 @@
 const express = require('express');
 const serveStatic = require("serve-static")
 const path = require('path');
+
+
+// Constants
+const PORT = 8080;
+const HOST = '0.0.0.0';
+
 app = express();
 app.use(serveStatic(path.join(__dirname, 'dist')));
-const port = process.env.PORT || 8080;
-app.listen(port);
+app.listen(PORT, HOST);
+
+console.log(`Running on http://${HOST}:${PORT}`);
+
