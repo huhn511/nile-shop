@@ -85,7 +85,10 @@ export default {
         type: 'success',
         duration: 3000
       })
-      this.form = {}
+      this.form = {
+        title: '',
+        desc: ''
+      }
 
     },
     onSubmit() {
