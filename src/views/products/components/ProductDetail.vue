@@ -4,7 +4,7 @@
 
       <sticky :class-name="'sub-navbar '+postForm.status">
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
-          Save
+          Update
         </el-button>
         <el-button type="warning" @click="draftForm">draft</el-button>
       </sticky>
@@ -179,7 +179,7 @@ export default {
       console.log("messages", this.messages)
 
       this.latest_product = this.sortedMessages[0];
-      this.postForm = this.latest_product.data
+      this.postForm = Object.assign({}, this.latest_product.data)
 
       this.loading = false;
     },
