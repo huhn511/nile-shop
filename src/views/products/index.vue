@@ -12,9 +12,11 @@
           {{ scope.row.data.id }}
         </template>
       </el-table-column>
-      <el-table-column label="Name">
+      <el-table-column label="Title">
         <template slot-scope="scope">
-          {{ scope.row.data.name }}
+          <router-link :to="'/products/edit/'+scope.row.data.id" class="link-type">
+            <span>{{ scope.row.data.title }}</span>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column label="Root" align="center">
