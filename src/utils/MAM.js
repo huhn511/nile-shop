@@ -154,31 +154,48 @@ export const createProductChannel = (product, seed) => {
 
     const promise = new Promise(async (resolve, reject) => {
         try {
-            const secretKey = 'TEST'//generateSeed(81);
-            const eventBody = {};
-            eventBody.data = product;
-            eventBody.timestamp = Date.now();
-            eventBody.status = 'created'
-
-            const messageBody = {
-                ...eventBody
-            };
-
-            
-            const mam_object = await publish(eventBody, state_object);
+            const blueprint = {};
+            blueprint.type = "blueprint";
+            blueprint.data = product;
+            blueprint.timestamp = Date.now();
+            blueprint.status = 'created'
 
 
-            if (mam_object) {
-                // Create a new item entry using that item ID
-                //await createItem(eventBody, channel, secretKey);
-                eventBody.root = mam_object.root;
-                eventBody.secretKey = mam_object.state.channel.secretKey;
-                eventBody.next_root = mam_object.state.channel.next_root;
-                eventBody.start = mam_object.state.channel.start;
+            // create stock
+            let stock_seed = generateSeed()
+            let stock_state_object = Mam.init(provider, stock_seed, 2)
+            stock_state_object = Mam.changeMode(stock_state_object, 'restricted', 'TEST')
 
+            const stock = {};
+            stock.type = "stock";
+            stock.data = [];
+            stock.timestamp = blueprint.timestamp;
+            stock.status = 'created'
+            stock.blueprint = Mam.getRoot(state_object)
+
+            const mam_stock = await publish(stock, stock_state_object);
+
+            if (mam_stock) {
+                // create product
+                // add stock root to data object
+                blueprint.stock_root = mam_stock.root;
+
+                const mam_blueprint = await publish(blueprint, state_object);
+
+
+                if (mam_blueprint) {
+                    blueprint.root = mam_blueprint.root;
+                    blueprint.secretKey = mam_blueprint.state.channel.secretKey;
+                    blueprint.next_root = mam_blueprint.state.channel.next_root;
+                    blueprint.start = mam_blueprint.state.channel.start;
+
+                }
+                blueprint.stock_next_root = mam_stock.state.channel.next_root;
+                blueprint.stock_seed = stock_seed
+                blueprint.stock_start = mam_stock.state.channel.start;
             }
-
-            return resolve(eventBody);
+            
+            return resolve(blueprint);
         } catch (error) {
             console.log('createProductChannel error', error);
             return reject();

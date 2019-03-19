@@ -55,10 +55,13 @@
         <el-form-item label="Amount" :label-width="formLabelWidth">
           <el-input v-model="increase_stock_form.amount" type="number" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="Producer" :label-width="formLabelWidth">
+          <el-input v-model="increase_stock_form.producer" type="text" placeholder="Your name"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">Confirm</el-button>
+        <el-button type="primary" @click="onIncreaseStockConfirmed">Confirm</el-button>
       </span>
     </el-dialog>
 
@@ -68,6 +71,7 @@
 
 <script>
 import Sticky from '@/components/Sticky'
+import { createProductChannel, generateSeed } from '@/utils/MAM';
 
 import {
   fetchProduct,
@@ -174,7 +178,7 @@ export default {
     submitForm() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.updateProduct();
+          this.updateProduct(this.form);
         } else {
           console.log('error submit!!')
           return false
@@ -206,11 +210,11 @@ export default {
         return product;
       }
     },
-    updateProduct: async function() {
+    updateProduct: async function(data) {
       this.loading = true;
 
       let response = await appendAttributesUpdate(
-        this.form,
+        data,
         this.product.seed,
         this.product.next_root,
         this.product.start
@@ -245,6 +249,37 @@ export default {
     onIncreaseStock() {
       this.dialogFormVisible = true
       console.log("Hello world!")
+    },
+    onIncreaseStockConfirmed() {
+
+      // create choosen amount of new products (new mam channels)
+      console.log("amount: ", this.increase_stock_form.amount)
+      
+
+      let real_product = {
+        blueprint: this.product.root,
+        producer: this.increase_stock_form.producer
+      }
+      console.log("real product: ", real_product)
+      this.publishRealProduct(real_product)
+
+
+    },
+    publishRealProduct: async function(real_product){
+
+      let seed = generateSeed()
+
+      // publish it to mam
+      let response = await createProductChannel(real_product, seed)
+
+      console.log("response", response)
+
+      this.product.data.stock.push(response.root)
+
+      this.updateProduct(this.product.data);
+
+      this.dialogFormVisible = false
+
     }
   }
 }
