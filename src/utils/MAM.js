@@ -194,7 +194,7 @@ export const createProductChannel = (product, seed) => {
                 blueprint.stock_seed = stock_seed
                 blueprint.stock_start = mam_stock.state.channel.start;
             }
-            
+
             return resolve(blueprint);
         } catch (error) {
             console.log('createProductChannel error', error);
@@ -204,6 +204,98 @@ export const createProductChannel = (product, seed) => {
 
     return promise;
 };
+
+export const increaseStock = (data, product) => {
+    let seed = generateSeed()
+    let resp = {};
+    let state_object = Mam.init(provider, seed, 2)
+    state_object = Mam.changeMode(state_object, 'restricted', 'TEST')
+
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+
+            console.log("product info", product)
+            console.log("product data", data)
+
+            // create real product
+            const product_object = {};
+            product_object.type = "product";
+            product_object.data = data;
+            product_object.timestamp = Date.now();
+            product_object.status = 'created'
+            product_object.blueprint = product.root
+            product_object.stock = product.stock_root
+
+            const mam_product = await publish(product_object, state_object);
+
+
+            if (mam_product) {
+                console.log("success", mam_product)
+
+                // append stock channel with product information
+                resp = await appendStock(mam_product.root, product.stock_root, product.stock_seed, product.stock_next_root, product.stock_start)
+                console.log("stock attended: ", resp)
+            }
+            
+            return resolve(resp);
+        } catch (error) {
+            console.log('increaseStock error', error);
+            return reject();
+        }
+    });
+
+    return promise;
+};
+export const appendStock = async (data, root, seed, next_root, start) => {
+
+    const mamState = {
+        subscribed: [],
+        channel: {
+            side_key: "TEST",
+            mode: 'restricted',
+            next_root: next_root,
+            security: 2,
+            start: start,
+            count: 1,
+            next_count: 1,
+            index: 0,
+        },
+        seed: seed,
+    };
+
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+            if (root) {
+                const eventBody = {};
+                eventBody.data = data;
+                eventBody.timestamp = Date.now();
+                eventBody.status = 'increased'
+
+                const mamData = await publish(eventBody, mamState);
+
+                if (mamData) {
+                    // Create a new item entry using that item ID
+                    //await createItem(eventBody, channel, secretKey);
+                    eventBody.root = mamData.root;
+                    eventBody.secretKey = mamData.state.channel.secretKey;
+                    eventBody.next_root = mamData.state.channel.next_root;
+                    eventBody.start = mamData.state.channel.start;
+
+                }
+
+                return resolve(eventBody);
+
+            }
+            return reject();
+        } catch (error) {
+            console.log('appendStock error', error);
+            return reject();
+        }
+    });
+
+    return promise;
+};
+
 
 export const fetchProducts = async (seed, root, secretKey) => {
 

@@ -16,6 +16,11 @@
         <el-row>
           <p>ID: {{form.id}}</p>
           <p>Root: {{product.root}}</p>
+          <p>Stock root: {{product.stock_root}}</p>
+          <p>Stock seed: {{product.stock_seed}}</p>
+          <p>Stock start: {{product.stock_start}}</p>
+          <p>Stock next root: {{product.stock_next_root}}</p>
+
           <el-col :span="24">
             <el-form-item label="Title:">
                 <el-input v-model="form.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
@@ -71,7 +76,7 @@
 
 <script>
 import Sticky from '@/components/Sticky'
-import { createProductChannel, generateSeed } from '@/utils/MAM';
+import { createProductChannel, generateSeed, increaseStock } from '@/utils/MAM';
 
 import {
   fetchProduct,
@@ -185,12 +190,6 @@ export default {
         }
       })
     },
-    getRemoteUserList(query) {
-      userSearch(query).then(response => {
-        if (!response.data.items) return
-        this.userListOptions = response.data.items.map(v => v.name)
-      })
-    },
     loadLatestProduct: async function(product_id) {
       this.loading = true;
 
@@ -257,7 +256,6 @@ export default {
       
 
       let real_product = {
-        blueprint: this.product.root,
         producer: this.increase_stock_form.producer
       }
       console.log("real product: ", real_product)
@@ -265,21 +263,30 @@ export default {
 
 
     },
-    publishRealProduct: async function(real_product){
+    publishRealProduct: async function(product){
 
-      let seed = generateSeed()
 
       // publish it to mam
-      let response = await createProductChannel(real_product, seed)
+      let response = await increaseStock(product, this.product)
 
-      console.log("response", response)
+      console.log("final response", response)
 
-      this.product.data.stock.push(response.root)
+      this.products.pop(this.product);
 
-      this.updateProduct(this.product.data);
+      this.product.stock_next_root = response.next_root
+      this.product.stock_start = response.start
 
-      this.dialogFormVisible = false
+      this.products.push(this.product);
+      const parsed = JSON.stringify(this.products);
+      localStorage.setItem('products', parsed);
+      this.loadLatestProduct();
 
+      this.$notify({
+        title: 'Sucecss',
+        message: `Product "${this.form.title}" updated!`,
+        type: 'success',
+        duration: 2000
+      })
     }
   }
 }
