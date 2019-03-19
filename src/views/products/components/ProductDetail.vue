@@ -26,6 +26,12 @@
       </div>
     </el-form>
 
+    <el-collapse accordion v-for="(message, index) in messages" :key="message.data.id">
+      <el-collapse-item :title="message.data.title" :name=index>
+        <pre>{{message.data}}</pre>
+      </el-collapse-item>
+    </el-collapse>
+
   </div>
 </template>
 
@@ -88,7 +94,8 @@ export default {
       rules: {
         title: [{ validator: validateRequire }]
       },
-      tempRoute: {}
+      tempRoute: {},
+      messages: []
     }
   },
   computed: {
@@ -113,9 +120,6 @@ export default {
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
-    fetchData(id) {
-      console.log("load iD", id)
-    },
     setTagsViewTitle() {
       const title = this.lang === 'zh' ? 'Edit Article' : 'Edit Article'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
@@ -171,19 +175,12 @@ export default {
       this.products = JSON.parse(_products);
 
       this.product = this.products.find(this.getCurrentProduct);
+      this.messages = await fetchProducts(this.product.seed, this.product.root);
+      console.log("messages", this.messages)
 
-      console.log("product", this.product)
-
-      this.latest_product = await fetchProduct(
-        this.product.seed,
-        this.product.root
-      );
-
+      this.latest_product = this.messages[this.messages.length - 1];
       this.postForm = this.latest_product.data
 
-      //this.messages = await fetchProducts(this.product.seed, this.product.root);
-
-      //this.fetched_product = this.messages[this.messages.length - 1];
       this.loading = false;
     },
     getCurrentProduct(product) {
