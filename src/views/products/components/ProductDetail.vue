@@ -27,7 +27,7 @@
     </el-form>
 
     <el-collapse accordion>
-      <el-collapse-item v-for="(message, index) in sortedMessages" :key="index" :title=generateTitle(message) :name=index>
+      <el-collapse-item v-for="(message, index) in sortedMessages" :key="index" v-bind:title="generateTitle(message)" :name=index>
         <pre>{{message.data}}</pre>
       </el-collapse-item>
     </el-collapse>
@@ -224,8 +224,8 @@ export default {
       this.postForm.status = 'published'
       this.loading = false
     },
-    generateTitle(message) {
-      return message.data.title + ", " + message.status + " at " + message.timestamp
+    generateTitle(message, index) {
+      return message.data.title + ", " + message.status + " at " + this.$options.filters.formatTimestampToDate(message.timestamp)
     }
   }
 }

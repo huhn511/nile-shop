@@ -24,10 +24,18 @@ import '@/permission' // permission control
  * If you remove `../mock` it will automatically request easy-mock data.
  */
 import '../mock' // simulation data
+import moment from 'moment'
 
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
+
+
+Vue.filter('formatTimestampToDate', function (timestamp) {
+  if (timestamp) {
+    return moment(timestamp).format('MMMM Do YYYY, h:mm:ss a')
+  }
+})
 
 new Vue({
   el: '#app',
@@ -35,3 +43,4 @@ new Vue({
   store,
   render: h => h(App)
 })
+
