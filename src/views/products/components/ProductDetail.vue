@@ -7,8 +7,10 @@
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Update
         </el-button>
+        <el-button @click="onIncreaseStock" type="primary">Increase Stock</el-button>
         <el-button @click="onCancel" type="warning">Cancel</el-button>
       </sticky>
+
 
       <div class="createPost-main-container">
         <el-row>
@@ -46,7 +48,22 @@
         <pre>{{message.data}}</pre>
       </el-collapse-item>
     </el-collapse>
+
+    <el-dialog title="Increase your stock" :visible.sync="dialogFormVisible">
+      <p>You can create products of your product blueprint "{{form.title}}"</p>
+      <el-form :model="increase_stock_form">
+        <el-form-item label="Amount" :label-width="formLabelWidth">
+          <el-input v-model="increase_stock_form.amount" type="number" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">Confirm</el-button>
+      </span>
+    </el-dialog>
+
   </div>
+  
 </template>
 
 <script>
@@ -62,6 +79,10 @@ const defaultForm = {
   status: 'draft',
   title: 'default title',
   desc: 'default description'
+}
+
+const defaultIncreaseStockForm = {
+  amount: 1
 }
 
 export default {
@@ -102,13 +123,17 @@ export default {
     }
     return {
       form: Object.assign({}, defaultForm),
+      increase_stock_form: Object.assign({}, defaultIncreaseStockForm),
       loading: false,
       userListOptions: [],
       rules: {
         title: [{ validator: validateRequire }]
       },
       tempRoute: {},
-      messages: []
+      messages: [],
+      dialogFormVisible: false,
+      formLabelWidth: '120px'
+
     }
   },
   computed: {
@@ -216,6 +241,10 @@ export default {
     },
     onCancel() {
       this.$router.push('/products')
+    },
+    onIncreaseStock() {
+      this.dialogFormVisible = true
+      console.log("Hello world!")
     }
   }
 }
