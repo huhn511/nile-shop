@@ -1,8 +1,8 @@
 <template>
   <div v-loading="loading" class="createPost-container">
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
+    <el-form ref="form" :model="form" :rules="rules" class="form-container">
 
-      <sticky :class-name="'sub-navbar '+postForm.status">
+      <sticky :class-name="'sub-navbar '+form.status">
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Update
         </el-button>
@@ -11,27 +11,27 @@
 
       <div class="createPost-main-container">
         <el-row>
-          <p>ID: {{postForm.id}}</p>
+          <p>ID: {{form.id}}</p>
           <p>Root: {{product.root}}</p>
           <el-col :span="24">
             <el-form-item label="Title:">
-                <el-input v-model="postForm.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
+                <el-input v-model="form.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-form-item label="Description:">
-          <el-input v-model="postForm.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
+          <el-input v-model="form.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
           <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars (1000 max)</span>
         </el-form-item>
 
 
         <el-form-item label="Price">
           <el-col :span="12">
-            <el-input type="number" v-model="postForm.price" step="any"></el-input>
+            <el-input type="number" v-model="form.price" step="any"></el-input>
           </el-col>
           <el-col :span="5">
-            <el-select v-model="postForm.currency" placeholder="choose currency">
+            <el-select v-model="form.currency" placeholder="choose currency">
               <el-option label="Euro" value="euro"></el-option>
               <el-option label="IOTA" value="iota"></el-option>
             </el-select>
@@ -101,7 +101,7 @@ export default {
       }
     }
     return {
-      postForm: Object.assign({}, defaultForm),
+      form: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
       rules: {
@@ -121,7 +121,7 @@ export default {
       return this.messages.sort(compare);
     },
     descriptionLength() {
-      return this.postForm.desc.length
+      return this.form.desc.length
     },
     lang() {
       return this.$store.getters.language
@@ -132,7 +132,7 @@ export default {
       this.product_id = this.$route.params && this.$route.params.id
       this.loadLatestProduct()
     } else {
-      this.postForm = Object.assign({}, defaultForm)
+      this.form = Object.assign({}, defaultForm)
     }
 
     // Why need to make a copy of this.$route here?
@@ -143,11 +143,11 @@ export default {
   methods: {
     setTagsViewTitle() {
       const title = this.lang === 'zh' ? 'Edit Article' : 'Edit Article'
-      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
+      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.form.id}` })
       this.$store.dispatch('updateVisitedView', route)
     },
     submitForm() {
-      this.$refs.postForm.validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
           this.updateProduct();
         } else {
@@ -172,7 +172,7 @@ export default {
       this.messages = await fetchProducts(this.product.seed, this.product.root);
 
       this.latest_product = this.sortedMessages[0];
-      this.postForm = Object.assign({}, this.latest_product.data)
+      this.form = Object.assign({}, this.latest_product.data)
 
       this.loading = false;
     },
@@ -185,7 +185,7 @@ export default {
       this.loading = true;
 
       let response = await appendAttributesUpdate(
-        this.postForm,
+        this.form,
         this.product.seed,
         this.product.next_root,
         this.product.start
@@ -204,11 +204,11 @@ export default {
 
       this.$notify({
         title: 'Sucecss',
-        message: 'Product updated!',
+        message: `Product "${this.form.title}" updated!`,
         type: 'success',
         duration: 2000
       })
-      this.postForm.status = 'published'
+      this.form.status = 'published'
       this.loading = false
     },
     generateTitle(message, index) {
