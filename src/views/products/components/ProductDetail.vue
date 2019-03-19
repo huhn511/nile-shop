@@ -17,10 +17,6 @@
           <p>ID: {{form.id}}</p>
           <p>Root: {{product.root}}</p>
           <p>Stock root: {{product.stock_root}}</p>
-          <p>Stock seed: {{product.stock_seed}}</p>
-          <p>Stock start: {{product.stock_start}}</p>
-          <p>Stock next root: {{product.stock_next_root}}</p>
-
           <el-col :span="24">
             <el-form-item label="Title:">
                 <el-input v-model="form.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
@@ -66,7 +62,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="onIncreaseStockConfirmed">Confirm</el-button>
+        <el-button type="primary" v-loading="loading" @click="onIncreaseStockConfirmed">Confirm</el-button>
       </span>
     </el-dialog>
 
@@ -222,6 +218,10 @@ export default {
       this.products.pop(this.product);
       response.seed = this.product.seed;
       response.root = this.product.root;
+      response.stock_next_root = this.product.stock_next_root;
+      response.stock_start = this.product.stock_start;
+      response.stock_seed = this.product.stock_seed;
+      response.stock_root = this.product.stock_root;
 
       this.product = response;
 
@@ -265,6 +265,7 @@ export default {
     },
     publishRealProduct: async function(product){
 
+      this.loading = true;
 
       // publish it to mam
       let response = await increaseStock(product, this.product)
@@ -287,6 +288,8 @@ export default {
         type: 'success',
         duration: 2000
       })
+      this.loading = false;
+      this.dialogFormVisible = false
     }
   }
 }
