@@ -45,7 +45,7 @@ export const appendAttributesUpdate = async (product, seed, next_root, start) =>
                 const eventBody = {};
                 eventBody.data = product;
                 eventBody.timestamp = Date.now();
-                eventBody.status = 'product_updated'
+                eventBody.status = 'updated'
 
                 const messageBody = {
                     ...eventBody
