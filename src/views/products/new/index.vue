@@ -1,8 +1,8 @@
 <template>
   <div class="app-container" v-loading="loading">
     <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Name">
-        <el-input v-model="form.name"/>
+      <el-form-item label="Title">
+        <el-input v-model="form.title"/>
       </el-form-item>
       <el-form-item label="Description">
         <el-input v-model="form.desc" type="textarea"/>
@@ -32,7 +32,7 @@ export default {
       products: [],
       loading: false,
       form: {
-        name: '',
+        title: '',
         desc: ''
       }
     }
