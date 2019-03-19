@@ -1,5 +1,6 @@
 <template>
   <div v-loading="loading" class="createPost-container">
+    <h2>Update Product</h2>
     <el-form ref="form" :model="form" :rules="rules" class="form-container">
 
       <sticky :class-name="'sub-navbar '+form.status">
@@ -39,13 +40,12 @@
         </el-form-item>
       </div>
     </el-form>
-
+    <h2>Product History</h2>
     <el-collapse accordion>
       <el-collapse-item v-for="(message, index) in sortedMessages" :key="index" v-bind:title="generateTitle(message)" :name=index>
         <pre>{{message.data}}</pre>
       </el-collapse-item>
     </el-collapse>
-
   </div>
 </template>
 
