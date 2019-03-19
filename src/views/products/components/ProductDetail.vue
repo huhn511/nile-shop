@@ -6,10 +6,13 @@
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Update
         </el-button>
+        <el-button @click="onCancel" type="warning">Cancel</el-button>
       </sticky>
 
       <div class="createPost-main-container">
         <el-row>
+          <p>ID: {{postForm.id}}</p>
+          <p>Root: {{product.root}}</p>
           <el-col :span="24">
             <el-form-item label="Title:">
                 <el-input v-model="postForm.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
@@ -19,8 +22,9 @@
 
         <el-form-item label="Description:">
           <el-input v-model="postForm.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
-          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars</span>
+          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars (1000 max)</span>
         </el-form-item>
+
 
         <el-form-item label="Price">
           <el-col :span="12">
@@ -209,6 +213,9 @@ export default {
     },
     generateTitle(message, index) {
       return message.data.title + ", " + message.status + " at " + this.$options.filters.formatTimestampToDate(message.timestamp)
+    },
+    onCancel() {
+      this.$router.push('/products')
     }
   }
 }
@@ -228,12 +235,6 @@ export default {
         float: left;
       }
     }
-  }
-  .word-counter {
-    width: 40px;
-    position: absolute;
-    right: -10px;
-    top: 0px;
   }
 }
 </style>
