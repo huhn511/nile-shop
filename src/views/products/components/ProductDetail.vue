@@ -6,12 +6,10 @@
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Update
         </el-button>
-        <el-button type="warning" @click="draftForm">draft</el-button>
       </sticky>
 
       <div class="createPost-main-container">
         <el-row>
-          <Warning />
           <el-col :span="24">
             <el-form-item label="Title:">
                 <el-input v-model="postForm.title" :rows="1" type="text" class="product-text" autosize placeholder="Product title" />
@@ -21,7 +19,7 @@
 
         <el-form-item label="Description:">
           <el-input v-model="postForm.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
-          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }}字</span>
+          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars</span>
         </el-form-item>
 
         <el-form-item label="Price">
@@ -48,7 +46,6 @@
 </template>
 
 <script>
-import Warning from './Warning'
 import Sticky from '@/components/Sticky'
 
 import {
@@ -65,7 +62,7 @@ const defaultForm = {
 
 export default {
   name: 'ProductDetail',
-  components: { Warning, Sticky },
+  components: { Sticky },
   props: {
     isEdit: {
       type: Boolean,
@@ -155,22 +152,6 @@ export default {
         }
       })
     },
-    draftForm() {
-      if (this.postForm.title.length === 0) {
-        this.$message({
-          message: 'Please enter the required title and content',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: 'Successfully saved!',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-      this.postForm.status = 'draft'
-    },
     getRemoteUserList(query) {
       userSearch(query).then(response => {
         if (!response.data.items) return
@@ -180,13 +161,11 @@ export default {
     loadLatestProduct: async function(product_id) {
       this.loading = true;
 
-
       let _products = localStorage.getItem("products") || "[]";
       this.products = JSON.parse(_products);
 
       this.product = this.products.find(this.getCurrentProduct);
       this.messages = await fetchProducts(this.product.seed, this.product.root);
-      console.log("messages", this.messages)
 
       this.latest_product = this.sortedMessages[0];
       this.postForm = Object.assign({}, this.latest_product.data)
@@ -194,15 +173,11 @@ export default {
       this.loading = false;
     },
     getCurrentProduct(product) {
-      console.log("getCurrentProduct", product)
-
       if (product.data.id == this.product_id) {
         return product;
       }
     },
     updateProduct: async function() {
-      console.log("update");
-
       this.loading = true;
 
       let response = await appendAttributesUpdate(
@@ -211,7 +186,6 @@ export default {
         this.product.next_root,
         this.product.start
       );
-      console.log("YEAH ", response);
 
       this.products.pop(this.product);
       response.seed = this.product.seed;
@@ -221,13 +195,12 @@ export default {
 
       this.products.push(this.product);
       const parsed = JSON.stringify(this.products);
-      localStorage.setItem("products", parsed);
-      console.log("products updated!");
+      localStorage.setItem('products', parsed);
       this.loadLatestProduct();
 
       this.$notify({
         title: 'Sucecss',
-        message: 'Product created!',
+        message: 'Product updated!',
         type: 'success',
         duration: 2000
       })

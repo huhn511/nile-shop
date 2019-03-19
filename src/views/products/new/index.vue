@@ -2,14 +2,15 @@
   <div class="app-container" v-loading="loading">
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="Title">
-        <el-input v-model="form.title"/>
+        <el-input v-model="form.title" placeholder="Product title"/>
       </el-form-item>
-      <el-form-item label="Description">
-        <el-input v-model="form.desc" type="textarea"/>
-      </el-form-item>
+      <el-form-item label="Description:">
+          <el-input v-model="form.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
+          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars (1000 Max)</span>
+        </el-form-item>
       <el-form-item label="Price">
         <el-col :span="19">
-          <el-input type="number" v-model="form.price" step="any"></el-input>
+          <el-input type="number" v-model="form.price" step="any" placeholder="1000"></el-input>
         </el-col>
         <el-col :span="5">
           <el-select v-model="form.currency" placeholder="choose currency">
@@ -48,6 +49,11 @@ export default {
       }
     }
   },
+  computed: {
+    descriptionLength() {
+      return this.form.desc.length
+    }
+  },
   methods: {
     loadProducts() {       
       let _products = localStorage.getItem('products') || "[]"
@@ -72,18 +78,22 @@ export default {
       localStorage.setItem('products', parsed)
       this.loadProducts()  
       this.loading = false
-      this.$message('Product created!')
+      
+      this.$notify({
+        title: 'Sucecss',
+        message: `Product ${this.form.title} created!`,
+        type: 'success',
+        duration: 3000
+      })
       this.form = {}
+
     },
     onSubmit() {
       this.form.id = this.next_id
       this.createProduct(this.form)
     },
     onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
+      this.$router.push("/products")
     }
   },
   mounted() {
