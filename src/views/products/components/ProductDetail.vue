@@ -1,12 +1,12 @@
 <template>
-  <div class="createPost-container">
+  <div v-loading="loading" class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
 
       <sticky :class-name="'sub-navbar '+postForm.status">
-        <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
+        <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Save
         </el-button>
-        <el-button v-loading="loading" type="warning" @click="draftForm">draft</el-button>
+        <el-button type="warning" @click="draftForm">draft</el-button>
       </sticky>
 
       <div class="createPost-main-container">
@@ -26,8 +26,8 @@
       </div>
     </el-form>
 
-    <el-collapse accordion v-for="(message, index) in messages" :key="message.data.id">
-      <el-collapse-item :title="message.data.title" :name=index>
+    <el-collapse accordion>
+      <el-collapse-item v-for="(message, index) in sortedMessages" :key="index" :title=generateTitle(message) :name=index>
         <pre>{{message.data}}</pre>
       </el-collapse-item>
     </el-collapse>
@@ -99,6 +99,14 @@ export default {
     }
   },
   computed: {
+    sortedMessages: function() {
+      function compare(a, b) {
+        if (a.timestamp > b.timestamp) return -1;
+        if (a.timestamp < b.timestamp) return 1;
+        return 0;
+      }
+      return this.messages.sort(compare);
+    },
     descriptionLength() {
       return this.postForm.desc.length
     },
@@ -130,15 +138,7 @@ export default {
       console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$notify({
-            title: 'Sucecss',
-            message: 'Product created!',
-            type: 'success',
-            duration: 2000
-          })
-          this.postForm.status = 'published'
-          this.loading = false
+          this.updateProduct();
         } else {
           console.log('error submit!!')
           return false
@@ -178,7 +178,7 @@ export default {
       this.messages = await fetchProducts(this.product.seed, this.product.root);
       console.log("messages", this.messages)
 
-      this.latest_product = this.messages[this.messages.length - 1];
+      this.latest_product = this.sortedMessages[0];
       this.postForm = this.latest_product.data
 
       this.loading = false;
@@ -190,6 +190,43 @@ export default {
         return product;
       }
     },
+    updateProduct: async function() {
+      console.log("update");
+
+      this.loading = true;
+
+      let response = await appendAttributesUpdate(
+        this.postForm,
+        this.product.seed,
+        this.product.next_root,
+        this.product.start
+      );
+      console.log("YEAH ", response);
+
+      this.products.pop(this.product);
+      response.seed = this.product.seed;
+      response.root = this.product.root;
+
+      this.product = response;
+
+      this.products.push(this.product);
+      const parsed = JSON.stringify(this.products);
+      localStorage.setItem("products", parsed);
+      console.log("products updated!");
+      this.loadLatestProduct();
+
+      this.$notify({
+        title: 'Sucecss',
+        message: 'Product created!',
+        type: 'success',
+        duration: 2000
+      })
+      this.postForm.status = 'published'
+      this.loading = false
+    },
+    generateTitle(message) {
+      return message.data.title + ", " + message.status + " at " + message.timestamp
+    }
   }
 }
 </script>
