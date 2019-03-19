@@ -23,6 +23,18 @@
           <el-input v-model="postForm.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
           <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }}字</span>
         </el-form-item>
+
+        <el-form-item label="Price">
+          <el-col :span="12">
+            <el-input type="number" v-model="postForm.price" step="any"></el-input>
+          </el-col>
+          <el-col :span="5">
+            <el-select v-model="postForm.currency" placeholder="choose currency">
+              <el-option label="Euro" value="euro"></el-option>
+              <el-option label="IOTA" value="iota"></el-option>
+            </el-select>
+          </el-col>
+        </el-form-item>
       </div>
     </el-form>
 
@@ -134,8 +146,6 @@ export default {
       this.$store.dispatch('updateVisitedView', route)
     },
     submitForm() {
-      this.postForm.display_time = parseInt(this.display_time / 1000)
-      console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.updateProduct();
