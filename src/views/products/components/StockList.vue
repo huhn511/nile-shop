@@ -4,43 +4,11 @@
     <el-table-column
       v-loading="loading"
       align="center"
-      label="ID"
-      width="65"
-      element-loading-text="请给我点时间！"
+      label="DATA"
+      element-loading-text="Loading..."
     >
       <template slot-scope="scope">
-        <span>{{ scope.row.id }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column width="180px" align="center" label="Date">
-      <template slot-scope="scope">
-        <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column min-width="300px" label="Title">
-      <template slot-scope="scope">
-        <span>{{ scope.row.title }}</span>
-        <el-tag>{{ scope.row.type }}</el-tag>
-      </template>
-    </el-table-column>
-
-    <el-table-column width="110px" align="center" label="Author">
-      <template slot-scope="scope">
-        <span>{{ scope.row.author }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column width="120px" label="Importance">
-      <template slot-scope="scope">
-        <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" />
-      </template>
-    </el-table-column>
-
-    <el-table-column align="center" label="Readings" width="95">
-      <template slot-scope="scope">
-        <span>{{ scope.row.pageviews }}</span>
+        <span>{{ scope.row.data }}</span>
       </template>
     </el-table-column>
 
@@ -52,10 +20,17 @@
       </template>
     </el-table-column>
 
+    <el-table-column width="180px" align="center" label="Date">
+      <template slot-scope="scope">
+        <span>{{ scope.row.timestamp | formatTimestampToDate }}</span>
+      </template>
+    </el-table-column>
+
   </el-table>
 </template>
 
 <script>
+import { fetch } from '@/utils/MAM';
 
 export default {
   filters: {
@@ -76,7 +51,9 @@ export default {
   },
   data() {
     return {
-      list: null,
+      product: null,
+      product_id: 0,
+      list: [],
       listQuery: {
         page: 1,
         limit: 5,
@@ -87,14 +64,41 @@ export default {
     }
   },
   created() {
-    //this.getList()
+    this.product_id = this.$route.params && this.$route.params.id
+    this.getStock()
   },
   methods: {
-    getList() {
+    getStock: async function(product_id) {
       this.loading = true
+
+      // get stock root
+      let _products = localStorage.getItem("products") || "[]";
+      this.products = JSON.parse(_products);
+
+      this.product = this.products.find(this.getCurrentProduct);
+
+      console.log("this.product", this.product)
+ 
+      // fetch stock items
+      await fetch(this.product.stock_root, 'restriced', 'TEST', this.appendToList, this.fetchComplete);
+
+
       this.$emit('create') // for test
       this.loading = false
 
+    },
+    getCurrentProduct(product) {
+      if (product.data.id == this.product_id) {
+        return product;
+      }
+    },
+    appendToList(message){
+      console.log("message", message);
+      
+        this.list.push(message)
+    },
+    fetchComplete() {
+        this.loading = false
     }
   }
 }
