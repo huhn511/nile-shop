@@ -230,8 +230,11 @@ export const increaseStock = (data, product) => {
             if (mam_product) {
                 console.log("success", mam_product)
 
+                // TODO: Enable functionality to create multiple products at the same time
+                let product_rootes = [mam_product.root]
+
                 // append stock channel with product information
-                resp = await appendStock(mam_product.root, product.stock_root, product.stock_seed, product.stock_next_root, product.stock_start)
+                resp = await appendStock(product_rootes, product.stock_root, product.stock_seed, product.stock_next_root, product.stock_start)
                 console.log("stock attended: ", resp)
             }
             
