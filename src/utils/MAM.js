@@ -330,7 +330,6 @@ export const generateSeed = () => {
 };
 
 export const fetch = (
-    provider,
     root,
     mode = 'public',
     key = null,

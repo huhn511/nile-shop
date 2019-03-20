@@ -33,7 +33,6 @@
 
 import Mam from 'mam.client.js';
 import { trytesToAscii } from '@iota/converter'
-import { provider } from '@/config.json';
 import { generateSeed } from '@/utils/MAM';
 import { fetch } from '@/utils/MAM';
 
@@ -67,7 +66,7 @@ export default {
             if(root) {
                 this.root = root
                 
-                await fetch(provider, this.root, 'restriced', 'TEST', this.appendToMessages, this.fetchComplete);
+                await fetch(this.root, 'restriced', 'TEST', this.appendToMessages, this.fetchComplete);
 
             } else {
                 console.log("no root defined, show search and latest views.")
