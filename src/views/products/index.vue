@@ -19,14 +19,17 @@
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column label="Root" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.root }}</span>
-        </template>
-      </el-table-column>
       <el-table-column class-name="status-col" label="Status" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Actions" align="center">
+        <template slot-scope="scope">
+          <el-row>
+            <el-button @click="$router.push('/viewer/' + scope.row.root)" type="success" icon="el-icon-view" circle></el-button>
+            <el-button @click="$router.push('/products/edit/' + scope.row.data.id)" type="primary" icon="el-icon-edit" circle></el-button>
+          </el-row>
         </template>
       </el-table-column>
     </el-table>
