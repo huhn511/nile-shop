@@ -68,13 +68,22 @@ export const constantRouterMap = [
   {
     path: '/orders',
     component: Layout,
-    redirect: '/orders',
+    redirect: '/orders/index',
     name: 'Orders',
     meta: { title: 'Orders', icon: 'box' },
     children: [{
-      path: 'orders',
-      component: () => import('@/views/orders/index')
-    }]
+      path: 'index',
+      name: 'List',
+      component: () => import('@/views/orders/index'),
+      meta: { title: 'Order List', icon: 'list' }
+    },
+    {
+      path: 'new',
+      name: 'New Order',
+      component: () => import('@/views/orders/new/index'),
+      meta: { title: 'New Order', icon: 'add' }
+    }
+    ]
   },
   {
     path: '/viewer',
