@@ -27,6 +27,8 @@
 <script>
 import Sticky from '@/components/Sticky'
 
+import { createMAMChannel } from '@/utils/MAM'
+
 export default {
   name: 'OrderForm',
   components: { Sticky },
@@ -45,8 +47,25 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
+    onSubmit: async function() {
       console.log("click", this.form)
+      // save it to mam!
+      this.loading = true
+      let order = await createMAMChannel(this.form, 'order')
+
+      // fetch orders from database
+
+      let orders_string = localStorage.getItem('orders') || "[]"
+      let orders = JSON.parse(orders_string)
+
+      orders.push(order)
+
+      // save orders in database
+      const parsed = JSON.stringify(orders);
+      localStorage.setItem('orders', parsed)
+
+      this.loading = false
+      this.$router.push('/orders')
     },
     onCancel() {
       this.$router.push('/orders')

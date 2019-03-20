@@ -356,3 +356,51 @@ export const fetch = (
 
     return promise;
 };
+
+export const createMAMChannel = (
+    data,
+    type
+) => {
+
+    let seed = generateSeed()
+
+    let state_object = Mam.init(provider, seed, 2)
+    state_object = Mam.changeMode(state_object, 'restricted', 'TEST')
+
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+
+            // create object
+            let object = {};
+            object.type = type;
+            object.data = data;
+            object.timestamp = Date.now();
+            object.status = 'created'
+
+
+            // TODO: UPDATE PRODUCTS (ROOTs IN DATA) if tyoe = order
+
+            // publish object
+            const object_channel = await publish(object, state_object);
+
+            // add secrets to object
+            if (object_channel) {
+                object.root = object_channel.root;
+                object.secretKey = object_channel.state.channel.secretKey;
+                object.next_root = object_channel.state.channel.next_root;
+                object.start = object_channel.state.channel.start;
+                object.seed = seed;
+            }
+
+            // add proper error handling
+            return resolve(object);
+        } catch (error) {
+            console.log('createMAMChannel error', error);
+            return reject();
+        }
+    });
+
+    return promise;
+};
+
+
