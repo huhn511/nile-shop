@@ -7,7 +7,6 @@
         <el-button style="margin-left: 10px;" type="success" @click="submitForm">
           Update
         </el-button>
-        <el-button @click="onIncreaseStock" type="primary">Increase Stock</el-button>
         <el-button @click="onCancel" type="warning">Cancel</el-button>
       </sticky>
 
@@ -50,21 +49,6 @@
       </el-collapse-item>
     </el-collapse>
 
-    <el-dialog title="Increase your stock" :visible.sync="dialogFormVisible">
-      <p>You can create products of your product blueprint "{{form.title}}"</p>
-      <el-form :model="increase_stock_form">
-        <el-form-item label="Amount" :label-width="formLabelWidth">
-          <el-input v-model="increase_stock_form.amount" type="number" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="Producer" :label-width="formLabelWidth">
-          <el-input v-model="increase_stock_form.producer" type="text" placeholder="Your name"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" v-loading="loading" @click="onIncreaseStockConfirmed">Confirm</el-button>
-      </span>
-    </el-dialog>
 
   </div>
   
@@ -88,9 +72,6 @@ const defaultForm = {
   desc: 'default description'
 }
 
-const defaultIncreaseStockForm = {
-  amount: 1
-}
 
 export default {
   name: 'ProductDetail',
@@ -130,7 +111,6 @@ export default {
     }
     return {
       form: Object.assign({}, defaultForm),
-      increase_stock_form: Object.assign({}, defaultIncreaseStockForm),
       loading: false,
       userListOptions: [],
       rules: {
@@ -138,8 +118,7 @@ export default {
       },
       tempRoute: {},
       messages: [],
-      dialogFormVisible: false,
-      formLabelWidth: '120px'
+      dialogFormVisible: false
 
     }
   },
@@ -246,52 +225,6 @@ export default {
     },
     onCancel() {
       this.$router.push('/products')
-    },
-    onIncreaseStock() {
-      this.dialogFormVisible = true
-      console.log("Hello world!")
-    },
-    onIncreaseStockConfirmed() {
-
-      // create choosen amount of new products (new mam channels)
-      console.log("amount: ", this.increase_stock_form.amount)
-      
-
-      let real_product = {
-        producer: this.increase_stock_form.producer
-      }
-      console.log("real product: ", real_product)
-      this.publishRealProduct(real_product)
-
-
-    },
-    publishRealProduct: async function(product){
-
-      this.loading = true;
-
-      // publish it to mam
-      let response = await increaseStock(product, this.product)
-
-      console.log("final response", response)
-
-      this.products.pop(this.product);
-
-      this.product.stock_next_root = response.next_root
-      this.product.stock_start = response.start
-
-      this.products.push(this.product);
-      const parsed = JSON.stringify(this.products);
-      localStorage.setItem('products', parsed);
-      this.loadLatestProduct();
-
-      this.$notify({
-        title: 'Sucecss',
-        message: `Product "${this.form.title}" updated!`,
-        type: 'success',
-        duration: 2000
-      })
-      this.loading = false;
-      this.dialogFormVisible = false
     }
   }
 }
