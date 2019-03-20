@@ -2,8 +2,6 @@ import Mam from 'mam.client.js';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter'
 import { provider } from '../config.json';
 
-// Initialise MAM State
-
 // Publish to tangle
 const publish = async (data, mamState) => {
 
@@ -329,4 +327,30 @@ export const generateSeed = () => {
         values.forEach(value => (result += charset[value % charset.length]));
         return result;
     } else throw new Error('Your browser is outdated and cant generate secure random numbers');
+};
+
+export const fetch = (
+    provider,
+    root,
+    mode = 'public',
+    key = null,
+    reportEvent,
+    onFetchComplete
+) => {
+    if (!provider || !root) return;
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+            Mam.init(provider);
+            await Mam.fetch(root, mode, key, data => {
+                const event = JSON.parse(trytesToAscii(data));
+                reportEvent(event);
+            });
+            return resolve(onFetchComplete());
+        } catch (error) {
+            console.log('MAM fetch error', error);
+            return reject();
+        }
+    });
+
+    return promise;
 };

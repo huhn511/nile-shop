@@ -72,12 +72,14 @@
 
 <script>
 import Sticky from '@/components/Sticky'
-import { createProductChannel, generateSeed, increaseStock } from '@/utils/MAM';
 
 import {
   fetchProduct,
   appendAttributesUpdate,
-  fetchProducts
+  fetchProducts,
+  createProductChannel,
+  generateSeed,
+  increaseStock
 } from "@/utils/MAM";
 
 const defaultForm = {

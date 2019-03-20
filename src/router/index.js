@@ -37,7 +37,6 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
-
   {
     path: '/products',
     component: Layout,
@@ -76,6 +75,26 @@ export const constantRouterMap = [
       path: 'orders',
       component: () => import('@/views/orders/index')
     }]
+  },
+  {
+    path: '/viewer',
+    component: Layout,
+    redirect: '/viewer',
+    name: 'Viewer',
+    meta: { title: 'Viewer', icon: 'eye' },
+    children: [
+      {
+        path: '/viewer/',
+        component: () => import('@/views/viewer/index'),
+        meta: { title: 'Viewer', noCache: true },
+      },
+      {
+        path: '/viewer/:root',
+        component: () => import('@/views/viewer/index'),
+        meta: { title: 'Viewer', noCache: true },
+        hidden: true
+      },
+    ]
   },
   {
     path: 'Website',
