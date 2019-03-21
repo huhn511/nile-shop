@@ -22,7 +22,25 @@
       <el-form-item>
         <el-button type="primary" @click="onSubmit">Create</el-button>
         <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>   
+      </el-form-item>
+      <el-row>
+        <div class="info" style="height: 15%">
+          <p>Center: {{ center }}</p>
+          <p>Iac: {{ iac }}</p>
+        </div>
+        <l-map
+          style="height: 400px; width: 400px"
+          :zoom="zoom"
+          :center="center"
+          @update:zoom="zoomUpdated"
+          @update:center="centerUpdated"
+          @update:bounds="boundsUpdated"
+        >
+          <l-tile-layer :url="url"></l-tile-layer>
+          <l-marker :lat-lng="center"></l-marker>
+        </l-map>   
+      </el-row>
+      
     </el-form>
   </div>
 </template>
@@ -35,9 +53,19 @@ import Mam from 'mam.client.js';
 const mode = 'restricted'
 const provider = 'https://nodes.devnet.thetangle.org:443'
 const { asciiToTrytes, trytesToAscii } = require('@iota/converter')
+const iotaAreaCodes = require('@iota/area-codes');
+
+const iac = iotaAreaCodes.encode(52.529562, 13.413047);
+console.log("IOTA Area Code", iac);
+
+import {LMap, LTileLayer, LMarker} from 'vue2-leaflet'
+
+const dimensions = iotaAreaCodes.getPrecisionDimensions(11);
+console.log("dimensions", dimensions);
+console.log("iotaAreaCodes.CodePrecision.EXTRA", iotaAreaCodes.CodePrecision.EXTRA);
 
 export default {
-  
+  components: { LMap, LTileLayer, LMarker },
   data() {
     return {
       next_id: 0,
@@ -46,12 +74,20 @@ export default {
       form: {
         title: '',
         desc: ''
-      }
+      },
+      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      zoom: 13,
+      center: { "lat": 52.529562, "lng": 13.413047 },
+      bounds: null,
+      iac: ''
     }
   },
   computed: {
     descriptionLength() {
       return this.form.desc.length
+    },
+    calculateIac() {
+      
     }
   },
   methods: {
@@ -98,6 +134,16 @@ export default {
     },
     onCancel() {
       this.$router.push("/products")
+    },
+    zoomUpdated (zoom) {
+      this.zoom = zoom;
+    },
+    centerUpdated (center) {
+        this.center = center;
+        this.iac = iotaAreaCodes.encode(this.center.lat, this.center.lat, iotaAreaCodes.CodePrecision.EXTRA)
+    },
+    boundsUpdated (bounds) {
+      this.bounds = bounds;
     }
   },
   mounted() {
