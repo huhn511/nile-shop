@@ -83,12 +83,13 @@ export default {
         title: 'Sucecss',
         message: `Product ${this.form.title} created!`,
         type: 'success',
-        duration: 3000
+        duration: 2000
       })
       this.form = {
         title: '',
         desc: ''
       }
+      this.$router.push('/products')
 
     },
     onSubmit() {
