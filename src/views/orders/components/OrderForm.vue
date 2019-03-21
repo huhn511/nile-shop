@@ -23,28 +23,29 @@
     </el-form>
 
 
+      <h2>Shopping card</h2>
+      <shopping-cart />
+
       <h2>Order object</h2>
       <pre>{{form}}</pre>
 
+
       <h2>Product List</h2>
-      <u>
-        <li v-for="product in products" v-bind:key="product.data.id">
-          {{product.data.title}}, {{product.data.price}} {{product.data.currency}} 
-          <el-button @click="addToCart(product)" type="primary">Add</el-button>
-        </li>
-      </u>
+      <product-list />
 
   </div>
 </template>
 
 <script>
 import Sticky from '@/components/Sticky'
+import ShoppingCart from './ShoppingCart'
+import ProductList from './ProductList'
 
 import { createMAMChannel } from '@/utils/MAM'
 
 export default {
   name: 'OrderForm',
-  components: { Sticky },
+  components: { Sticky, ShoppingCart, ProductList },
   props: {
     isNew: {
       type: Boolean,
@@ -66,12 +67,10 @@ export default {
     // fetch products from database
     let products_string = localStorage.getItem('products') || "[]"
     this.products = JSON.parse(products_string)
-    console.log("this.products", this.products)
     this.calcNextId()
   },
   methods: {
     onSubmit: async function() {
-      console.log("click", this.form)
       // save it to mam!
       this.loading = true
       let order = await createMAMChannel(this.form, 'order')
@@ -92,10 +91,6 @@ export default {
     onCancel() {
       this.$router.push('/orders')
     },
-    addToCart(product) {
-      console.log("add product to card", product.data.title);
-      this.form.cart.push(product.root)
-    },
     calcNextId() {       
       let _orders = localStorage.getItem('orders') || "[]"
       let orders = JSON.parse(_orders)
@@ -109,3 +104,10 @@ export default {
   
 }
 </script>
+
+<style>
+  .image {
+    width: 100%;
+    display: block;
+  } 
+</style>
