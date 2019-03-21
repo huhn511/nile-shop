@@ -9,12 +9,14 @@
       highlight-current-row>
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.row.data.id }}
         </template>
       </el-table-column>
       <el-table-column label="Order created by">
         <template slot-scope="scope">
-          {{ scope.row.data.name }}
+          <router-link :to="{ name: 'OrderDetails', params: {order: scope.row} }">
+            {{ scope.row.data.name }}
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column label="Root">

@@ -82,7 +82,15 @@ export const constantRouterMap = [
       name: 'New Order',
       component: () => import('@/views/orders/new/index'),
       meta: { title: 'New Order', icon: 'add' }
-    }
+    },
+    {
+      path: 'details/:id(\\d+)',
+      component: () => import('@/views/orders/details/index'),
+      name: 'OrderDetails',
+      meta: { title: 'Order details', noCache: true },
+      hidden: true,
+      props: true
+    },
     ]
   },
   {

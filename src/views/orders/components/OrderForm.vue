@@ -57,7 +57,8 @@ export default {
       products: [],
       form: {
         name: '',
-        cart: []
+        cart: [],
+        id: 0
       }
     }
   },
@@ -66,6 +67,7 @@ export default {
     let products_string = localStorage.getItem('products') || "[]"
     this.products = JSON.parse(products_string)
     console.log("this.products", this.products)
+    this.calcNextId()
   },
   methods: {
     onSubmit: async function() {
@@ -93,7 +95,16 @@ export default {
     addToCart(product) {
       console.log("add product to card", product.data.title);
       this.form.cart.push(product.root)
-    }
+    },
+    calcNextId() {       
+      let _orders = localStorage.getItem('orders') || "[]"
+      let orders = JSON.parse(_orders)
+      if(orders.length) {
+          this.form.id = orders.length + 1;
+      } else {
+          this.form.id = 1;
+      }
+    },
   }
   
 }
