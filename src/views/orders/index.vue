@@ -17,6 +17,11 @@
           {{ scope.row.data.name }}
         </template>
       </el-table-column>
+      <el-table-column label="Root">
+        <template slot-scope="scope">
+          {{ scope.row.root }}
+        </template>
+      </el-table-column>
       <el-table-column class-name="status-col" label="Status" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
