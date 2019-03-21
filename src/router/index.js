@@ -90,7 +90,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/viewer',
     name: 'Viewer',
-    meta: { title: 'Viewer', icon: 'eye' },
+    meta: { title: 'Viewer', icon: 'eye-open' },
     children: [
       {
         path: '/viewer/',
