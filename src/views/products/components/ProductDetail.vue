@@ -196,7 +196,10 @@ export default {
         this.product.start
       );
 
-      this.products.pop(this.product);
+      // Remove the correct product
+      // search the correct object index (in theory id  - 1)
+      this.products.splice(this.product.data.id - 1, 1);
+
       response.seed = this.product.seed;
       response.root = this.product.root;
       response.stock_next_root = this.product.stock_next_root;
@@ -207,6 +210,7 @@ export default {
       this.product = response;
 
       this.products.push(this.product);
+
       const parsed = JSON.stringify(this.products);
       localStorage.setItem('products', parsed);
       this.loadLatestProduct();
