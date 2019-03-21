@@ -19,6 +19,17 @@
           </router-link>
         </template>
       </el-table-column>
+
+      <el-table-column label="Price">
+        <template slot-scope="scope">
+          <span>{{ scope.row.data.price }} {{ scope.row.data.currency }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Last entry">
+        <template slot-scope="scope">
+          <span>{{ scope.row.timestamp | formatTimestampToDate }} </span>
+        </template>
+      </el-table-column>
       <el-table-column class-name="status-col" label="Status" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
@@ -37,15 +48,6 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
-
-import { createProductChannel } from '@/utils/MAM';
-
-import Mam from 'mam.client.js';
-
-const mode = 'restricted'
-const provider = 'https://nodes.devnet.thetangle.org:443'
-const { asciiToTrytes, trytesToAscii } = require('@iota/converter')
 
 export default {
   filters: {
@@ -73,7 +75,6 @@ export default {
 
       let _products = localStorage.getItem('products') || "[]"
       this.list = JSON.parse(_products)
-      console.log(this.list);
       
       this.listLoading = false
     }
