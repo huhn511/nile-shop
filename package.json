@@ -17,7 +17,7 @@
   "dependencies": {
     "@iota/core": "^1.0.0-beta.11",
     "axios": "0.18.0",
-    "element-ui": "2.4.6",
+    "element-ui": "^2.4.6",
     "js-cookie": "2.2.0",
     "mam.client.js": "iotaledger/mam.client.js",
     "mockjs": "1.0.1-beta3",

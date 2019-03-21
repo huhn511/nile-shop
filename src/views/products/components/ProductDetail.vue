@@ -43,11 +43,21 @@
       </div>
     </el-form>
     <h2>Product History</h2>
-    <el-collapse accordion>
-      <el-collapse-item v-for="(message, index) in sortedMessages" :key="index" v-bind:title="generateTitle(message)" :name=index>
-        <pre>{{message.data}}</pre>
-      </el-collapse-item>
-    </el-collapse>
+    <div class="block">
+      <el-timeline>
+        <el-timeline-item
+          v-for="(message, index) in sortedMessages"
+          :key="index"
+          :icon="''"
+          :type="'primary'"
+          :color="'#0bbd87'"
+          :size="'large'"
+          :timestamp="message.timestamp | formatTimestampToDate">
+          {{message.status}} data: {{message.data}}
+        </el-timeline-item>
+      </el-timeline>
+    </div>
+
   </div>
 </template>
 
