@@ -10,7 +10,6 @@
         <el-button @click="onCancel" type="warning">Cancel</el-button>
       </sticky>
 
-
       <div class="createOrder-main-container">
         <el-row>
           <el-col :span="24">
@@ -50,7 +49,7 @@ export default {
       products: [],
       form: {
         name: '',
-        cart: [],
+        cart: this.$store.state.cart.items,
         id: 0
       }
     }
@@ -60,6 +59,11 @@ export default {
     let products_string = localStorage.getItem('products') || "[]"
     this.products = JSON.parse(products_string)
     this.calcNextId()
+  },
+  computed: {
+    cart() {
+      return this.$store.state.cart.items
+    }
   },
   methods: {
     onSubmit: async function() {
