@@ -174,6 +174,7 @@ export const createProductChannel = (product, seed) => {
             const mam_stock = await publish(stock, stock_state_object);
 
             if (mam_stock) {
+
                 // create product
                 // add stock root to data object
                 blueprint.stock_root = mam_stock.root;
@@ -356,6 +357,78 @@ export const fetch = (
 
     return promise;
 };
+
+export const createShop = (
+    data,
+    type
+) => {
+
+    let shop_seed = generateSeed()
+
+    let shop_state_object = Mam.init(provider, shop_seed, 2)
+    shop_state_object = Mam.changeMode(shop_state_object, 'restricted', 'TEST')
+    const promise = new Promise(async (resolve, reject) => {
+        try {
+            console.log("_shop 000", _shop)
+
+            // create shop
+            const _shop = {};
+            _shop.type = type;
+            _shop.data = data;
+            _shop.timestamp = Date.now();
+            _shop.status = 'created'
+            console.log("_shop 0", _shop)
+
+
+            // create catalog
+            let catalog_seed = generateSeed()
+            let catalog_state_object = Mam.init(provider, catalog_seed, 2)
+            catalog_state_object = Mam.changeMode(catalog_state_object, 'restricted', 'TEST')
+
+            const catalog = {};
+            catalog.type = "catalog";
+            catalog.data = [];
+            catalog.timestamp = _shop.timestamp;
+            catalog.status = 'created'
+            catalog.shop = Mam.getRoot(shop_state_object)
+            console.log("_shop 1", _shop)
+
+            const mam_catalog = await publish(catalog, catalog_state_object);
+            if ( mam_catalog ) {
+                console.log("mam_catalog published!", mam_catalog)
+                _shop.catalog_root = mam_catalog.root
+                console.log("_shop 2", _shop)
+                // publish shop
+                const shop_channel = await publish(_shop, shop_state_object);
+                console.log("shop_channel published!", shop_channel)
+
+                // add secrets to object
+                if (shop_channel) {
+                    _shop.root = shop_channel.root;
+                    _shop.secretKey = shop_channel.state.channel.secretKey;
+                    _shop.next_root = shop_channel.state.channel.next_root;
+                    _shop.start = shop_channel.state.channel.start;
+                    _shop.seed = shop_seed;
+                    _shop.catalog_seed = catalog_seed
+
+                    _shop.catalog_key = mam_catalog.state.channel.secretKey;
+                    _shop.catalog_next_root = mam_catalog.state.channel.next_root;
+                    _shop.catalog_start = mam_catalog.state.channel.start;
+
+                    // add proper error handling
+                    return resolve(_shop);
+                }
+
+            }
+        } catch (error) {
+            console.log('createMAMChannel error', error);
+            return reject();
+        }
+    });
+
+    return promise;
+};
+
 
 export const createMAMChannel = (
     data,

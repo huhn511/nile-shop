@@ -32,7 +32,7 @@
 <script>
 import Sticky from '@/components/Sticky'
 
-import { createMAMChannel } from '@/utils/MAM'
+import { createShop } from '@/utils/MAM'
 
 export default {
   name: 'CreateShop',
@@ -62,7 +62,7 @@ export default {
       // save it to mam!
       this.loading = true
 
-      let shop = await createMAMChannel(this.form, 'shop')
+      let shop = await createShop(this.form, 'shop')
 
       // save new shop secrets in database
       const parsed = JSON.stringify(shop);

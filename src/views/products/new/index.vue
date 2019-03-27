@@ -126,11 +126,11 @@ export default {
         product: response.root
       }
 
-      let shop_response = await appendAttributesUpdate(shop_detals_object, 'add_product', this.shop.seed, this.shop.next_root, this.shop.start)
+      let shop_response = await appendAttributesUpdate(shop_detals_object, 'add_blueprint', this.shop.catalog_seed, this.shop.catalog_next_root, this.shop.catalog_start)
 
       // save new shop secrets in database
-      this.shop.start = shop_response.start
-      this.shop.next_root = shop_response.next_root
+      this.shop.catalog_start = shop_response.start
+      this.shop.catalog_next_root = shop_response.next_root
 
       parsed = JSON.stringify(this.shop);
 
