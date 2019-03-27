@@ -1,4 +1,6 @@
 <template>
+<div class="login">
+  <nav-bar></nav-bar>
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
       <h3 class="title">Nile Shop</h3>
@@ -34,13 +36,19 @@
       </div>
     </el-form>
   </div>
+</div>
+  
 </template>
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
+import NavBar from '@/components/Navbar/index'
 
 export default {
   name: 'Login',
+  components: {
+    NavBar
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
