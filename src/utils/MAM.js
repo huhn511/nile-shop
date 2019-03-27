@@ -1,7 +1,11 @@
 import Mam from 'mam.client.js';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter'
 import { provider } from '../config.json';
+import { composeAPI } from '@iota/core'
 
+const iota = composeAPI({
+    provider: provider
+})
 // Publish to tangle
 const publish = async (data, mamState) => {
 
@@ -379,6 +383,14 @@ export const createShop = (
             _shop.status = 'created'
             console.log("_shop 0", _shop)
 
+            let order_reques_seed = generateSeed()
+            let order_request_address = await iota.getNewAddress(order_reques_seed, { index: 0 })
+                .then(address => address)
+                .catch(err => {
+                    // ...
+                })
+            _shop.order_request_address = order_request_address
+
 
             // create catalog
             let catalog_seed = generateSeed()
@@ -414,6 +426,8 @@ export const createShop = (
                     _shop.catalog_key = mam_catalog.state.channel.secretKey;
                     _shop.catalog_next_root = mam_catalog.state.channel.next_root;
                     _shop.catalog_start = mam_catalog.state.channel.start;
+
+                    _shop.order_reques_seed = order_reques_seed
 
                     // add proper error handling
                     return resolve(_shop);
