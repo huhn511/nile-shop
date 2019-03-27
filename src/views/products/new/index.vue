@@ -1,6 +1,9 @@
 <template>
   <div class="app-container" v-loading="loading">
-    <el-form ref="form" :model="form" label-width="120px">
+    <div v-if="!published">
+      <router-link to="/shop/shop">Create your shop first!</router-link>
+    </div>
+    <el-form v-if="published" ref="form" :model="form" label-width="120px">
       <el-form-item label="Title">
         <el-input v-model="form.title" placeholder="Product title"/>
       </el-form-item>
@@ -46,7 +49,7 @@
 </template>
 
 <script>
-import { createProductChannel, generateSeed } from '@/utils/MAM';
+import { createProductChannel, generateSeed, appendAttributesUpdate } from '@/utils/MAM';
 
 import Mam from 'mam.client.js';
 
@@ -68,9 +71,11 @@ export default {
   components: { LMap, LTileLayer, LMarker },
   data() {
     return {
+      shop: {},
       next_id: 0,
       products: [],
       loading: false,
+      published: false,
       form: {
         title: '',
         desc: ''
@@ -110,9 +115,27 @@ export default {
       response.seed = seed
 
       this.products.push(response);
-      const parsed = JSON.stringify(this.products);
+      let parsed = JSON.stringify(this.products);
       localStorage.setItem('products', parsed)
-      this.loadProducts()  
+      this.loadProducts()
+
+
+
+      // save product in shop details
+      let shop_detals_object = {
+        product: response.root
+      }
+
+      let shop_response = await appendAttributesUpdate(shop_detals_object, 'add_product', this.shop.seed, this.shop.next_root, this.shop.start)
+
+      // save new shop secrets in database
+      this.shop.start = shop_response.start
+      this.shop.next_root = shop_response.next_root
+
+      parsed = JSON.stringify(this.shop);
+
+      localStorage.setItem('shop', parsed)
+
       this.loading = false
       
       this.$notify({
@@ -147,6 +170,13 @@ export default {
     }
   },
   mounted() {
+
+    // fetch seed from database
+    let shop_string = localStorage.getItem('shop') || "{}"
+    this.shop = JSON.parse(shop_string)
+    this.published = JSON.stringify(this.shop) !== '{}'
+
+    console.log("loaded shop", this.shop)
     this.loadProducts()
   }
 

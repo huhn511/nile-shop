@@ -198,6 +198,7 @@ export default {
 
       let response = await appendAttributesUpdate(
         data,
+        'updated',
         this.product.seed,
         this.product.next_root,
         this.product.start

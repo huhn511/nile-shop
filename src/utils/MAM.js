@@ -20,7 +20,7 @@ const publish = async (data, mamState) => {
     }
 };
 
-export const appendAttributesUpdate = async (product, seed, next_root, start) => {
+export const appendAttributesUpdate = async (product, status, seed, next_root, start) => {
 
     const mamState = {
         subscribed: [],
@@ -43,7 +43,7 @@ export const appendAttributesUpdate = async (product, seed, next_root, start) =>
                 const eventBody = {};
                 eventBody.data = product;
                 eventBody.timestamp = Date.now();
-                eventBody.status = 'updated'
+                eventBody.status = status
 
                 const messageBody = {
                     ...eventBody
