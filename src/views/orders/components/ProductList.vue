@@ -1,6 +1,6 @@
 <template>
     <el-row>
-        <el-col :span="12" v-for="(product, index) in products" :key="index">
+        <el-col :span="4" v-for="(product, index) in products" :key="index">
             <el-card>
             <img src="http://via.placeholder.com/320x180" class="image">
                 <p>{{ product.data.title }}</p>

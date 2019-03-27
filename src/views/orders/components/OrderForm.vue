@@ -31,8 +31,13 @@
 import Sticky from '@/components/Sticky'
 import ShoppingCart from './ShoppingCart'
 import ProductList from './ProductList'
+import { composeAPI } from '@iota/core'
+import { provider } from '@/config.json';
 
-import { createMAMChannel } from '@/utils/MAM'
+const iota = composeAPI({
+    provider: provider
+})
+import { createMAMChannel, generateSeed } from '@/utils/MAM'
 
 export default {
   name: 'OrderForm',
@@ -69,6 +74,36 @@ export default {
     onSubmit: async function() {
       // save it to mam!
       this.loading = true
+      let review_seed = generateSeed()
+      await iota.getNewAddress(review_seed, { index: 0 })
+        .then(address => {
+          this.form.paying_address = address
+        })
+        .catch(err => {
+          // ...
+        })
+        await iota.getNewAddress(review_seed, { index: 1 })
+        .then(address => {
+          this.form.package_address = address
+        })
+        .catch(err => {
+          // ...
+        })
+        await iota.getNewAddress(review_seed, { index: 2 })
+        .then(address => {
+          this.form.pickup_address = address
+        })
+        .catch(err => {
+          // ...
+        })
+        await iota.getNewAddress(review_seed, { index: 3 })
+        .then(address => {
+          this.form.delivered_address = address
+        })
+        .catch(err => {
+          // ...
+        })
+
       let order = await createMAMChannel(this.form, 'order')
 
       // fetch orders from database
@@ -96,6 +131,9 @@ export default {
           this.form.id = 1;
       }
     },
+    generate_new_address() {
+
+    }
   }
   
 }
