@@ -24,6 +24,8 @@
     <shopping-cart />
     <h2>Product List</h2>
     <product-list />
+    <h2>Shipping Address</h2>
+    <LocationChooseMap @update="updateIac"/>
   </div>
 </template>
 
@@ -33,6 +35,7 @@ import ShoppingCart from './ShoppingCart'
 import ProductList from './ProductList'
 import { composeAPI } from '@iota/core'
 import { provider } from '@/config.json';
+import LocationChooseMap from "@/components/LocationChooseMap";
 
 const iota = composeAPI({
     provider: provider
@@ -41,7 +44,7 @@ import { createMAMChannel, generateSeed } from '@/utils/MAM'
 
 export default {
   name: 'OrderForm',
-  components: { Sticky, ShoppingCart, ProductList },
+  components: { Sticky, ShoppingCart, ProductList, LocationChooseMap },
   props: {
     isNew: {
       type: Boolean,
@@ -131,8 +134,8 @@ export default {
           this.form.id = 1;
       }
     },
-    generate_new_address() {
-
+    updateIac(newIac) {
+      this.form.shipping_location = newIac
     }
   }
   
