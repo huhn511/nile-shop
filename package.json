@@ -4,6 +4,7 @@
   "license": "MIT",
   "description": "Shop application prototype of the Nile Ecosystem",
   "author": "huhn <huhn@nile.ecosystem>",
+  "homepage": "https://vendor-demo.nile.community",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "node server.js",
@@ -12,7 +13,9 @@
     "lint": "eslint --ext .js,.vue src",
     "test": "npm run lint",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
-    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi "
+    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d ./"
   },
   "dependencies": {
     "@iota/area-codes": "^0.1.0",
@@ -54,6 +57,7 @@
     "express": "^4.16.4",
     "file-loader": "1.1.11",
     "friendly-errors-webpack-plugin": "1.7.0",
+    "gh-pages": "^2.0.1",
     "html-webpack-plugin": "4.0.0-alpha",
     "mini-css-extract-plugin": "0.4.1",
     "node-notifier": "5.2.1",
