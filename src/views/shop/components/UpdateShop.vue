@@ -1,18 +1,12 @@
 <template>
   <div v-loading="loading" class="shop-details-form-container">
-    <el-alert
-        v-if="published"
-        title="Shop is not published yet!"
-        type="warning">
-        <p>You can add your shop details and publish it!</p>
+    <el-alert v-if="published" title="Shop is not published yet!" type="warning">
+      <p>You can add your shop details and publish it!</p>
     </el-alert>
-    
-    <el-form ref="form" :model="form" class="form-container">
 
+    <el-form ref="form" :model="form" class="form-container">
       <sticky class-name="sub-navbar">
-        <el-button style="margin-left: 10px;" type="success" @click="onSubmit">
-          Update
-        </el-button>
+        <el-button style="margin-left: 10px;" type="success" @click="onSubmit">Update</el-button>
         <el-button @click="onCancel" type="warning">Cancel</el-button>
       </sticky>
 
@@ -20,7 +14,17 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="Name:">
-                <el-input v-model="form.name" :rows="1" type="text" class="shop-name" autosize placeholder="Your shop name" />
+              <el-input
+                v-model="form.name"
+                :rows="1"
+                type="text"
+                class="shop-name"
+                autosize
+                placeholder="Your shop name"
+              />
+            </el-form-item>
+            <el-form-item label="Location:">
+              <LocationChooseMap :iac="form.iac" @update="updateIac"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -30,13 +34,14 @@
 </template>
 
 <script>
-import Sticky from '@/components/Sticky'
+import Sticky from "@/components/Sticky";
+import LocationChooseMap from "@/components/LocationChooseMap";
 
-import { createMAMChannel } from '@/utils/MAM'
+import { createMAMChannel } from "@/utils/MAM";
 
 export default {
-  name: 'UpdateShop',
-  components: { Sticky },
+  name: "UpdateShop",
+  components: { Sticky, LocationChooseMap },
   props: {
     published: {
       type: Boolean,
@@ -44,38 +49,40 @@ export default {
     }
   },
   data() {
-    return{
+    return {
       loading: false,
       shop: {},
       form: {
-        name: '',
+        name: ""
       }
-    }
+    };
   },
   created() {
     // fetch products from database
-    let shop_string = localStorage.getItem('shop') || "{}"
-    this.shop = JSON.parse(shop_string)
-    this.form = this.shop.data
+    let shop_string = localStorage.getItem("shop") || "{}";
+    this.shop = JSON.parse(shop_string);
+    this.form = this.shop.data;
   },
   methods: {
     onSubmit: async function() {
       // save it to mam!
-      this.loading = true
+      this.loading = true;
 
-      let shop = await createMAMChannel(this.form, 'shop')
+      let shop = await createMAMChannel(this.form, "shop");
 
       // save orders in database
       const parsed = JSON.stringify(shop);
-      localStorage.setItem('shop', parsed)
+      localStorage.setItem("shop", parsed);
 
-      this.loading = false
-      this.$router.push('/dashboard')
+      this.loading = false;
+      this.$router.push("/dashboard");
     },
     onCancel() {
-      this.$router.push('/dashboard')
+      this.$router.push("/dashboard");
+    },
+    updateIac(newIac) {
+      this.form.iac = newIac
     }
   }
-  
-}
+};
 </script>
