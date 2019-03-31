@@ -8,9 +8,19 @@
         <el-input v-model="form.title" placeholder="Product title"/>
       </el-form-item>
       <el-form-item label="Description:">
-          <el-input v-model="form.desc" :rows="5" type="textarea" class="product-textarea" autosize placeholder="Product description" />
-          <span v-show="descriptionLength" class="word-counter">{{ descriptionLength }} Chars (1000 Max)</span>
-        </el-form-item>
+        <el-input
+          v-model="form.desc"
+          :rows="5"
+          type="textarea"
+          class="product-textarea"
+          autosize
+          placeholder="Product description"
+        />
+        <span
+          v-show="descriptionLength"
+          class="word-counter"
+        >{{ descriptionLength }} Chars (1000 Max)</span>
+      </el-form-item>
       <el-form-item label="Price">
         <el-col :span="19">
           <el-input type="number" v-model="form.price" step="any" placeholder="1000"></el-input>
@@ -22,16 +32,11 @@
           </el-select>
         </el-col>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
-      <el-row>
-        <div class="info" style="height: 15%">
-          <p>Center: {{ center }}</p>
-          <p>Iac: {{ iac }}</p>
-        </div>
+      <el-form-item label="Location">
+        <el-button type @click='showMap = !showMap'>{{ showMap ? 'Remove location' : 'Add new location' }}</el-button>
+        {{iac}}
         <l-map
+          v-if="showMap"
           style="height: 400px; width: 400px"
           :zoom="zoom"
           :center="center"
@@ -41,31 +46,39 @@
         >
           <l-tile-layer :url="url"></l-tile-layer>
           <l-marker :lat-lng="center"></l-marker>
-        </l-map>   
+        </l-map>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">Create</el-button>
+        <el-button @click="onCancel">Cancel</el-button>
+      </el-form-item>
+      <el-row>
       </el-row>
-      
     </el-form>
   </div>
 </template>
 
 <script>
-import { createProductChannel, generateSeed, appendAttributesUpdate } from '@/utils/MAM';
+import {
+  createProductChannel,
+  generateSeed,
+  appendAttributesUpdate
+} from "@/utils/MAM";
 
-import Mam from 'mam.client.js';
+import Mam from "mam.client.js";
 
-const mode = 'restricted'
-const provider = 'https://nodes.devnet.thetangle.org:443'
-const { asciiToTrytes, trytesToAscii } = require('@iota/converter')
-const iotaAreaCodes = require('@iota/area-codes');
+const mode = "restricted";
+const provider = "https://nodes.devnet.thetangle.org:443";
+const { asciiToTrytes, trytesToAscii } = require("@iota/converter");
+const iotaAreaCodes = require("@iota/area-codes");
 
 const iac = iotaAreaCodes.encode(52.529562, 13.413047);
 console.log("IOTA Area Code", iac);
 
-import {LMap, LTileLayer, LMarker} from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 
 const dimensions = iotaAreaCodes.getPrecisionDimensions(11);
-console.log("dimensions", dimensions);
-console.log("iotaAreaCodes.CodePrecision.EXTRA", iotaAreaCodes.CodePrecision.EXTRA);
 
 export default {
   components: { LMap, LTileLayer, LMarker },
@@ -77,119 +90,126 @@ export default {
       loading: false,
       published: false,
       form: {
-        title: '',
-        desc: ''
+        title: "",
+        desc: ""
       },
-      url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      url: "http://{s}.tile.osm.org/{z}/{x}/{y}.png",
       zoom: 13,
-      center: { "lat": 52.529562, "lng": 13.413047 },
+      center: { lat: 52.529562, lng: 13.413047 },
       bounds: null,
-      iac: ''
-    }
+      iac: "NPHTQORL9XK",
+      showMap: false
+    };
   },
   computed: {
     descriptionLength() {
-      return this.form.desc.length
+      return this.form.desc.length;
     },
-    calculateIac() {
-      
-    }
+    calculateIac() {}
   },
   methods: {
-    loadProducts() {       
-      let _products = localStorage.getItem('products') || "[]"
-      this.products = JSON.parse(_products)
-      if(this.products.length) {
-          this.next_id = this.products.length + 1;
+    loadProducts() {
+      let _products = localStorage.getItem("products") || "[]";
+      this.products = JSON.parse(_products);
+      if (this.products.length) {
+        this.next_id = this.products.length + 1;
       } else {
-          this.next_id = 1;
+        this.next_id = 1;
       }
     },
-    createProduct: async function(product){
-      this.loading = true
+    createProduct: async function(product) {
+      this.loading = true;
 
-      let seed = generateSeed()
+      let seed = generateSeed();
 
-      let response = await createProductChannel(product, seed)
+      let response = await createProductChannel(product, seed);
 
-      response.seed = seed
+      response.seed = seed;
 
       this.products.push(response);
       let parsed = JSON.stringify(this.products);
-      localStorage.setItem('products', parsed)
-      this.loadProducts()
-
-
+      localStorage.setItem("products", parsed);
+      this.loadProducts();
 
       // save product in shop details
       let shop_detals_object = {
         product: response.root
-      }
+      };
 
-      let shop_response = await appendAttributesUpdate(shop_detals_object, 'add_blueprint', this.shop.catalog_seed, this.shop.catalog_next_root, this.shop.catalog_start)
+      let shop_response = await appendAttributesUpdate(
+        shop_detals_object,
+        "add_blueprint",
+        this.shop.catalog_seed,
+        this.shop.catalog_next_root,
+        this.shop.catalog_start
+      );
 
       // save new shop secrets in database
-      this.shop.catalog_start = shop_response.start
-      this.shop.catalog_next_root = shop_response.next_root
+      this.shop.catalog_start = shop_response.start;
+      this.shop.catalog_next_root = shop_response.next_root;
 
       parsed = JSON.stringify(this.shop);
 
-      localStorage.setItem('shop', parsed)
+      localStorage.setItem("shop", parsed);
 
-      this.loading = false
-      
+      this.loading = false;
+
       this.$notify({
-        title: 'Sucecss',
+        title: "Sucecss",
         message: `Product ${this.form.title} created!`,
-        type: 'success',
+        type: "success",
         duration: 2000
-      })
+      });
       this.form = {
-        title: '',
-        desc: ''
-      }
-      this.$router.push('/products')
-
+        title: "",
+        desc: ""
+      };
+      this.$router.push("/products");
     },
     onSubmit() {
-      this.form.id = this.next_id
-      this.createProduct(this.form)
+      this.form.id = this.next_id;
+      if (this.iac && this.showMap) {
+        this.form.iac = this.iac;
+      }
+      this.createProduct(this.form);
     },
     onCancel() {
-      this.$router.push("/products")
+      this.$router.push("/products");
     },
-    zoomUpdated (zoom) {
+    zoomUpdated(zoom) {
       this.zoom = zoom;
     },
-    centerUpdated (center) {
-        this.center = center;
-        this.iac = iotaAreaCodes.encode(this.center.lat, this.center.lat, iotaAreaCodes.CodePrecision.EXTRA)
+    centerUpdated(center) {
+      this.center = center;
+      this.iac = iotaAreaCodes.encode(
+        this.center.lat,
+        this.center.lat,
+        iotaAreaCodes.CodePrecision.EXTRA
+      );
     },
-    boundsUpdated (bounds) {
+    boundsUpdated(bounds) {
       this.bounds = bounds;
     }
   },
-  mounted() {
-
+  mounted() {
     // fetch seed from database
-    let shop_string = localStorage.getItem('shop') || "{}"
-    this.shop = JSON.parse(shop_string)
-    this.published = JSON.stringify(this.shop) !== '{}'
+    let shop_string = localStorage.getItem("shop") || "{}";
+    this.shop = JSON.parse(shop_string);
+    this.published = JSON.stringify(this.shop) !== "{}";
 
-    console.log("loaded shop", this.shop)
-    this.loadProducts()
+    console.log("loaded shop", this.shop);
+    this.loadProducts();
   }
-
-}
+};
 </script>
 
 <style scoped>
-.line{
+.line {
   text-align: center;
 }
 .el-dropdown-link {
   cursor: pointer;
-  color: #409EFF;
+  color: #409eff;
 }
 .el-icon-arrow-down {
   font-size: 12px;
