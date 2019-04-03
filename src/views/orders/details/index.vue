@@ -1,18 +1,26 @@
 <template>
     <div>
+      <h2>QR - Code</h2>
+      <div class="qrcode-container">
+      <qrcode-vue :value="value" :size="size" level="H"></qrcode-vue>
+      </div>
+      <h2>Order data</h2>
       <pre>{{order}}</pre>
     </div>
 </template>
 
 <script>
+import QrcodeVue from 'qrcode.vue';
 
 export default {
   name: 'OrderDetails',
-  components: {  },
+  components: { QrcodeVue },
   params: ['order'],
   data() {
     return {
-      order: {}
+      order: {},
+      value: 'https://example.com',
+      size: 300
     }
   },
   mounted() {
@@ -20,3 +28,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+
+.qrcode-container {
+  margin-left: 20px;
+}
+
+</style>
