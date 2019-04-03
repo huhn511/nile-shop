@@ -15,7 +15,7 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d ./"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@iota/area-codes": "^0.1.0",
