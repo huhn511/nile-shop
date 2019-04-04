@@ -1,4 +1,4 @@
-import Mam from 'mam.client.js';
+import * as Mam from '@iota/mam';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter'
 import { provider } from '../config.json';
 import { composeAPI } from '@iota/core'
