@@ -31,9 +31,6 @@
 
 <script>
 
-import Mam from 'mam.client.js';
-import { trytesToAscii } from '@iota/converter'
-import { generateSeed } from '@/utils/MAM';
 import { fetch } from '@/utils/MAM';
 
 export default {
