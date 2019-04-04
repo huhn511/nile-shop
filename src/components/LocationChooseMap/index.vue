@@ -46,7 +46,7 @@ export default {
       this.center = center;
       this.new_iac = iotaAreaCodes.encode(
         this.center.lat,
-        this.center.lat,
+        this.center.lng,
         iotaAreaCodes.CodePrecision.EXTRA
       );
       this.$emit('update', this.new_iac)
