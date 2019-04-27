@@ -33,7 +33,7 @@ This project is based on [vue-element-admin](http://panjiachen.github.io/vue-ele
 
 ```bash
 # Clone project
-git clone https://github.com/PanJiaChen/vue-admin-template.git
+git clone https://github.com/huhn511/nile-shop
 
 # Install dependencies
 npm install
